@@ -12,8 +12,8 @@ export default function LandingPage() {
       <header>
         <h1 style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>MenuFlow</h1>
         <p style={{ fontSize: "1.125rem", maxWidth: "640px" }}>
-          MenuFlow is an accessible, offline-first digital menu platform that keeps your restaurant menu in sync
-          everywhere—boards, guest devices, and delivery apps.
+          MenuFlow is an accessible digital menu platform backed by a versioned manifest so boards, guest devices, and internal
+          teams stay in sync without touching a POS.
         </p>
       </header>
       <section aria-labelledby="explore">

@@ -1,258 +1,198 @@
 # PRD: MenuFlow
 
-**Version:** 1.2  
-**Date:** October 22, 2025  
-**Author:** Derek Brumby  
-**Stage:** MVP Definition  
+**Version:** 1.3
+**Date:** October 22, 2025 (status reviewed after latest commit)
+**Author:** Derek Brumby
+**Stage:** MVP Definition — implementation status tracked via checkboxes
 
 ---
 
 ## 1. Product Overview
 
-### Product Name
-**MenuFlow**
-
-### One-Liner
-An **accessible, offline-first digital menu and order-management system** that empowers restaurants to update menus, handle 86s, and sync across boards, web, and delivery apps — all in real-time and without the friction of traditional POS tools.
-
-### Mission
-Reimagine digital restaurant menus and boards as **fast, reliable, guest-friendly experiences** that are just as elegant for operators as they are for diners. MenuFlow eliminates common POS and Toast pain points through a unified, resilient, and intuitive platform.
+- [x] **Product Name:** MenuFlow
+- [x] **One-Liner:** Accessible digital menu and board system backed by a shared manifest.
+- [x] **Mission:** Deliver a fast, reliable guest experience while giving operators direct, low-friction control over menu data.
 
 ---
 
-## 2. Target Users
+## 2. Target Users & Current Coverage
 
-| Role | Needs / Pain Points | Goals |
-|------|---------------------|-------|
-| **Restaurant Owner / Operator** | Slow menu updates, inconsistent sync across channels, unreliable POS, unclear billing | Streamlined, real-time control of menus, transparency, cost visibility |
-| **Manager / Staff** | Tedious 86 workflows, crashes, support delays | Fast menu edits, live system feedback, simple device status view |
-| **Guest / Diner** | Confusing QR menus, accessibility barriers, order errors | Seamless, readable menus and ordering experience |
-| **Multi-location Franchise Manager** | No easy store-level overrides, compliance tracking | Central governance + local autonomy, built-in compliance monitoring |
+- [x] **Restaurant Owner / Operator** — Can edit pricing, availability, and visibility through the admin workspace with immediate persistence to the shared manifest.
+- [x] **Manager / Staff** — Gains quick “86” buttons and inline price edits for shift-level adjustments.
+- [ ] **Guest / Diner** — Reads responsive menu surfaces today; ordering flows are not yet implemented.
+- [ ] **Multi-location Franchise Manager** — No governance or per-store override tooling yet.
 
 ---
 
-## 3. Goals & Non-Goals
+## 3. Goals & Non-Goals (Execution Status)
 
 ### Goals
-- Deliver a **single source of truth** for all menu data (POS, online, board, print).
-- Enable **two-tap item edits** (price, visibility, sold-out) that propagate instantly.
-- Provide **offline resilience** across devices.
-- Achieve **WCAG 2.2 AA** accessibility out-of-the-box.
-- Offer **transparent cost and billing dashboards**.
-- Build **diagnostics and support tooling** directly into the app.
-- Integrate **payment/order validation** for guest ordering flow reliability.
+- [x] Deliver a **single source of truth** for menu data using a versioned JSON manifest validated by Zod and shared across web surfaces.
+- [x] Enable **two-tap item edits** for price and availability via the admin Menu Manager (changes persisted on save and reflected on guest/board reload).
+- [ ] Provide **offline resilience** — no service worker or offline cache yet.
+- [ ] Achieve **WCAG 2.2 AA** verification — base components are semantic, but automated accessibility audits are not wired into CI.
+- [ ] Offer **transparent cost and billing dashboards** — billing module is not started.
+- [x] Build **diagnostic insights** directly into the admin app (live manifest version, sold-out summary, hidden item counts).
+- [ ] Integrate **order validation** for reliability — not implemented.
 
-### Non-Goals
-- Full POS replacement (initially).  
-- Handling payment settlement or payroll.  
-- Deep CRM / loyalty features (phase 2).  
+### Non-Goals (Confirmed)
+- [x] Full POS replacement remains out of scope for the current MVP.
+- [x] Payment settlement or payroll features are explicitly excluded.
+- [x] Loyalty and deep CRM capabilities remain a later-phase consideration.
 
 ---
 
-## 4. Core Problems (Pain Points to Solve)
+## 4. Core Problems & Status
 
-| Category | Current Pain (Toast & Others) | MenuFlow Solution |
-|-----------|------------------------------|-------------------|
-| **Menu Management** | Multi-minute propagation; inconsistent between POS and boards | Instant sync engine (Pub/Sub + local cache) |
-| **Order Errors** | Duplicate/failed payments, mismatched reports | Payment reconciliation + order validator |
-| **Third-Party Sync** | Sold-out items still visible on delivery apps | API connectors w/ 86 propagation + sync dashboard |
-| **Support** | Slow, opaque escalation | Embedded chat, diagnostic logs, SLA transparency |
-| **Offline Reliability** | POS goes down = no menus or orders | Offline-first SW + IndexedDB queue |
-| **Billing Transparency** | Unclear fees & overcharges | Billing analytics & anomaly alerts |
-| **Accessibility** | Small text, glare, poor contrast | Dynamic type scaling, GlareSmart™ adaptive theme |
-| **Guest UX** | QR fatigue, slow load, poor readability | Instant-load “Paper View” menus + a11y standards |
-| **Multi-Store Control** | Hard to manage global vs local changes | Role-based override + audit log |
+- [x] **Menu Management latency** — Resolved via shared manifest and admin tools.
+- [ ] **Order errors / reconciliation** — No validator yet.
+- [ ] **Third-party sync drift** — No external adapters yet.
+- [x] **Support transparency** — Admin dashboard surfaces manifest health indicators, but chat/escalation tooling is pending.
+- [ ] **Offline reliability** — Not yet solved; highlighted as gap.
+- [ ] **Billing transparency** — Not implemented and tracked as future work.
+- [x] **Accessibility** — Semantic components exist, but full WCAG automation pending.
+- [x] **Guest UX** — Guest menu renders responsive content with nutrition data; ordering not available.
+- [ ] **Multi-store control** — Governance tooling not built.
 
 ---
 
 ## 5. Product Features
 
 ### 5.1 Unified Menu Engine
-- Single JSON schema for menu data (items, categories, nutrition, pricing).  
-- Sync adapters for Toast, Square, Lightspeed, DoorDash, UberEats.  
-- Real-time propagation via Pub/Sub.  
-- Version history + diff-view rollback.
+- [x] Single JSON manifest stored at `data/menu.json` with schema enforcement via `MenuSchema`.
+- [x] Manifest served through `/api/manifest` (Next.js) and `/manifest/latest` (Fastify backend) with version metadata.
+- [x] Version number increments on every edit to support cache-busting.
+- [ ] POS and delivery adapters (Toast, Square, etc.) — not yet implemented.
+- [ ] Diff view / rollback UI — not yet implemented.
 
 ### 5.2 86 Workflow
-- Two-tap flow: *Tap item → 86 for (duration)* → Confirm.  
-- Broadcast instantly across: boards, kiosks, guest menus, 3rd party menus.  
-- Badge displayed “Sold Out – Back Tomorrow”.
+- [x] Admin UI exposes quick buttons to mark an item sold out for 1 hour, rest of day, or clear the flag.
+- [x] `PATCH /api/menu/items/[itemId]/availability` persists `soldOutUntil` timestamps in the manifest.
+- [x] Guest and board surfaces display “Sold out” badges driven by manifest data.
 
-### 5.3 Admin Command Palette
-- Natural language and shortcut-based edits:  
-  `"Set fries $5.99"`, `"Hide pumpkin latte until Nov 1 8am"`.  
-- Role-based: Owner / Manager / Staff permissions.
+### 5.3 Admin Menu Manager
+- [x] Category groups with inline price update form and hide/show toggle per item.
+- [x] Live status messaging for each mutation (saving, success, error) with optimistic feedback.
+- [ ] Natural-language command palette — not yet implemented (replaced by structured controls for now).
 
-### 5.4 Offline-First Resilience
-- Service Worker caching for menus, assets, fonts.  
-- IndexedDB queue for local changes; reconciles automatically when back online.  
-- Visual indicator: “Offline mode – last sync 5 min ago.”
+### 5.4 Data Access & APIs
+- [x] REST endpoints for reading the manifest and mutating items (price, visibility, sold-out state).
+- [x] Shared SDK client (`packages/sdk/src/client.ts`) fetches `/api/manifest` with Zod validation.
+- [ ] Streaming/SSE realtime updates — not implemented.
 
-### 5.5 MenuSync Engine
-- Channel registry (in-store, web, delivery).  
-- Health monitor: “3 channels in sync ✅  1 stale ⚠️”.  
-- Automatic retry & webhook fallback.
+### 5.5 Diagnostics Snapshot
+- [x] Admin dashboard shows manifest version, sold-out list, and hidden item counts calculated server-side.
+- [x] `/api/status` reports manifest metrics and simple subsystem flags for external monitors.
+- [ ] Device health, POS heartbeat, or log export features — not implemented.
 
-### 5.6 Order & Payment Validator
-- Track full order lifecycle (Auth → Kitchen → Serve).  
-- Auto-detect double-charge or orphaned orders.  
-- Trigger refund workflow + guest notification.
+### 5.6 Guest & Board Surfaces
+- [x] Guest menu renders categories/items directly from the manifest (server component fetch).
+- [x] Board view highlights featured items, respects availability, and surfaces sold-out notices.
+- [ ] Offline caching, glare adaptation, and font scaling controls — not implemented.
 
-### 5.7 Diagnostics & Support Panel
-- Device/network check, sync status, POS heartbeat.  
-- “Generate Report” button for auto-attached logs.  
-- Embedded chat (Intercom/Linear integration) + escalation tracker.
-
-### 5.8 Transparent Billing Dashboard
-- Breakdown: hardware, processing, software, add-ons.  
-- Cost anomaly detection (e.g., > 20 % variance MoM).  
-- Export to CSV / PDF.
-
-### 5.9 Accessibility & Guest UX
-- WCAG 2.2 AA by default.  
-- Adjustable font sizes (120–200 %), high-contrast themes, alt text validation.  
-- Auto language detection + toggle.  
-- GlareSmart™: ambient light sensor → dynamic theme switch.  
-- Paper View: static, readable layout for comfort browsing.  
-
-### 5.10 Compliance Assistant
-- Automatic calorie rendering (chains ≥ 20 locations).  
-- Nutrition modal with printable sheet (FDA-ready).  
-- Audit trail for compliance checks.
-
-### 5.11 Analytics & Insights
-- Menu engagement metrics (views, dwell time, conversions).  
-- Operational metrics (edit latency, error counts, downtime).  
-- Export / webhook to BI tools.
+### 5.7 Future Modules (Not Started)
+- [ ] Offline-first service worker & IndexedDB queue.
+- [ ] MenuSync channel registry and auto retry.
+- [ ] Order & payment validator workflows.
+- [ ] Transparent billing dashboard with anomaly detection.
 
 ---
 
-## 6. Technical Architecture
+## 6. Architecture & Tech Stack
 
-| Layer | Tech | Description |
-|-------|------|-------------|
-| **Frontend (Web + Admin)** | Next.js ( App Router , TSX ), React 18, Tailwind / CSS Modules | Responsive PWA for guest + staff |
-| **Screen Player (TV/Kiosk)** | React app with service worker, SSE updates | Auto-updates / caches layout |
-| **Backend** | NestJS / Fastify (Node.js), Prisma ORM | API + sync service |
-| **Database** | SQLite (dev) → Postgres (prod) | Persistent menu data + audit logs |
-| **Realtime Layer** | Ably / Pusher / Cloudflare PubSub | Live menu updates |
-| **Storage** | S3 / R2 for images + CDN cache | Fast asset delivery |
-| **Auth** | NextAuth + Prisma Adapter | Email/password login + OAuth optional |
-| **Integrations** | Toast, Square, Lightspeed, Doordash API adapters | Sync POS ↔ MenuFlow |
-| **Testing** | Vitest, Playwright, axe-core CI | Unit + E2E + a11y coverage |
-| **Deployment** | Vercel / Fly.io / AWS Fargate | Global edge delivery |
+- [x] **Frontend:** Next.js App Router (TypeScript/TSX) with server components for data reads.
+- [x] **Admin UI:** Client component (`MenuManager`) using fetch-based mutations.
+- [x] **Guest & Boards:** Server components reading the shared manifest; rely on manual refresh for updates.
+- [x] **Backend:** Fastify server exposes manifest + 86 endpoints backed by the same JSON store.
+- [ ] **Database:** Prisma schema exists but persistence currently uses JSON; migrating to SQLite/Postgres remains future work.
+- [x] **Validation:** Zod schemas guard manifest payloads and API responses.
+- [ ] **Realtime Layer:** Not yet wired (no Ably/Pusher implementation).
+- [ ] **Storage/CDN:** Local JSON store only; S3/R2 integration pending.
+- [x] **Testing:** Vitest unit tests cover UI components and menu-store mutations; Playwright smoke test runs.
 
 ---
 
-## 7. Data Model (Simplified)
+## 7. Data Model Coverage
 
-| Entity | Key Fields | Notes |
-|---------|-------------|-------|
-| `MenuItem` | id, storeId, name, desc, price, calories, allergens[], visible, soldOutUntil | Core menu object |
-| `Category` | id, name, order, daypartRules | Group of menu items |
-| `IntegrationSource` | id, type, apiKey, mapping, lastSync | External POS/3rd-party |
-| `Order` | id, status, amount, paymentStatus, source | Used for validator |
-| `BillingRecord` | id, storeId, feeType, amount, timestamp | Transparency module |
-| `Log` | id, type, details, timestamp | Diagnostic + audit events |
-
----
-
-## 8. UX Design Principles
-
-1. **Cognitive Simplicity** — staff can perform the top 3 tasks (edit item, 86, price change) in < 10 seconds.  
-2. **Hospitality-first** — menus feel inviting, not transactional.  
-3. **Legibility in context** — readable from 3 meters on boards; 1-hand on phones.  
-4. **Progressive disclosure** — advanced features hidden behind simple primary flows.  
-5. **Empathetic feedback** — clear success/failure states w/ undo option.
+- [x] `Menu` — id, storeId, version, categories[], items[] persisted in JSON.
+- [x] `Category` — id, name, order, daypartRules captured in manifest.
+- [x] `MenuItem` — id, description, price, allergens, visibility, soldOutUntil supported.
+- [ ] `IntegrationSource` — not implemented.
+- [ ] `Order` — not implemented.
+- [ ] `BillingRecord` — not implemented.
+- [ ] `Log` — no structured log entity yet.
 
 ---
 
-## 9. MVP Scope (3 Sprints)
+## 8. UX Design Principles (Adherence)
 
-| Sprint | Deliverables | Success Criteria |
-|---------|---------------|------------------|
-| **Sprint 1** | Auth + Admin dashboard, Menu CRUD, Service Worker cache | Edit → propagate < 10 s |
-| **Sprint 2** | 86 workflow, POS adapter (CSV import), Offline mode, Paper View | Menu renders offline for 8 h |
-| **Sprint 3** | Diagnostics panel, Billing dashboard, Accessibility CI, Order validator | ≥ 95 a11y score in axe-core CI |
+- [x] **Cognitive Simplicity:** Inline controls and quick buttons keep top tasks under ten seconds.
+- [x] **Hospitality-first:** Guest menu emphasizes readability with generous spacing and typographic hierarchy.
+- [x] **Legibility in context:** Board layout scales featured items for distance viewing.
+- [ ] **Progressive disclosure:** Advanced workflows (billing, integrations) not yet layered in.
+- [x] **Empathetic feedback:** Status messages on admin mutations communicate success or failure.
 
 ---
 
-## 10. KPIs & Success Metrics
+## 9. MVP Scope & Sprint Status
 
-| Metric | Target |
-|---------|---------|
-| Menu edit latency | < 10 s propagation |
-| Offline resilience | 8 h cached menu availability |
-| A11y score | ≥ 95 axe-core |
-| Guest task success (find item) | ≥ 95 % |
-| Support resolution time | < 2 h avg |
-| Operator satisfaction | 9 / 10 post-beta |
-| Error reduction (orders/payments) | 80 % vs. baseline |
+- [ ] **Sprint 1:** Auth, dashboard, menu CRUD, service worker cache — auth & offline cache pending; dashboard + CRUD shipped.
+- [x] **Sprint 2:** 86 workflow and guest/board rendering — shipped via admin quick actions and shared manifest surfaces.
+- [ ] **Sprint 3:** Diagnostics panel, billing dashboard, order validator — partial diagnostics only; billing and validator pending.
+
+---
+
+## 10. KPIs & Instrumentation
+
+- [ ] **Menu edit latency < 10 s** — manual observation only; telemetry missing.
+- [ ] **Offline resilience 8 h** — not measured (feature pending).
+- [ ] **A11y score ≥ 95** — automated audits not configured.
+- [ ] **Guest task success ≥ 95%** — no study yet.
+- [ ] **Support resolution < 2 h** — no SLA tracking yet.
+- [ ] **Operator satisfaction ≥ 9/10** — surveying not implemented.
+- [ ] **Order/payment error reduction 80%** — validator not built.
 
 ---
 
 ## 11. Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|---------|------------|
-| API changes from Toast / Square | Medium | Adapter abstraction + version pinning |
-| Hardware variability (TV models, kiosk devices) | Medium | Responsive React player + CSS grid fallback |
-| Offline conflicts (data sync) | High | Vector clock / last-write-wins + manual merge UI |
-| Accessibility regression | Medium | Automated axe-core tests in CI |
-| Multi-store data scaling | Low / future | Migrate SQLite → Postgres + read replicas |
+- [ ] **External POS API changes** — adapters not yet abstracted; risk outstanding.
+- [ ] **Hardware variability** — no dedicated board testing plan yet.
+- [ ] **Offline conflicts** — no vector clock/merge logic implemented.
+- [x] **Accessibility regression** — partially mitigated by semantic components; automate audits next.
+- [ ] **Multi-store scaling** — JSON store only; migration path pending.
 
 ---
 
-## 12. Future Roadmap (Post-MVP)
+## 12. Future Roadmap
 
-- POS write-back adapter (bidirectional sync).  
-- AI-powered menu copy / translation assistant.  
-- Menu photo scanner → auto structured data import.  
-- Predictive 86 alerts (stock forecasting).  
-- KDS (kitchen display) integration.  
-- Loyalty / guest profile features.  
-
----
-
-## 13. References
-
-- Toast user community threads on support & order failures (2024–2025).  
-- Reddit r/restaurantowners and r/ToastPOS feedback.  
-- BBB complaints data for Toast Inc.  
-- FDA menu labeling guidelines (21 CFR 101.11).  
-- WCAG 2.2 AA requirements.  
+- [ ] POS write-back adapter for bidirectional sync.
+- [ ] AI-powered copy/translation assistant.
+- [ ] Menu photo scanner → structured data import.
+- [ ] Predictive 86 alerts using stock signals.
+- [ ] Kitchen display system integration.
+- [ ] Loyalty / guest profile features.
 
 ---
 
-## 14. Appendices
+## 13. Appendices
 
-### A. Example Command Palette Commands
-```
+### A. Admin Mutation Endpoints
+- [x] `PATCH /api/menu/items/{itemId}` — update price, visibility, description, calories, allergens.
+- [x] `PATCH /api/menu/items/{itemId}/availability` — set or clear `soldOutUntil` timestamp.
 
-"86 pancakes for today"
-"set burger price to 8.99"
-"show breakfast until 10:59am"
-"hide holiday menu"
-"print nutrition sheet for store 005"
+### B. Sample Admin Actions (Command Palette Replacement)
+- [x] “86 Maple Oat Latte for rest of day” → click `86 · Rest of day` next to the latte item.
+- [x] “Set fries price to 4.99” → edit the price field and submit.
+- [x] “Show holiday menu tomorrow” → toggle visibility off/on as needed (no scheduling yet).
 
-```
-
-### B. Sample Environment Configuration
-```
-
-DB_URL=postgres://...
-POS_ADAPTER=square
-EDGE_PUBSUB=ably
-AUTH_PROVIDER=email
-SUPPORT_WEBHOOK=linear
-
-```
+### C. Environment Setup
+- [x] `npm install`
+- [x] Copy `.env.example` → `.env.local` if using external services (none required for JSON store).
+- [x] `npm run dev` to launch Next.js app.
+- [x] `npm run test` to execute Vitest suite.
+- [x] `npm run e2e` to execute Playwright smoke test.
 
 ---
 
-**End of Document**
-
----
-
-Would you like me to follow up with a **technical-architecture diagram** (e.g., Mermaid or PlantUML) to visually map data flow between modules — admin ↔ API ↔ board ↔ POS ↔ third-party apps?
-It would make this PRD complete for engineering kickoff.
+All unchecked boxes represent intentionally deferred work; no item remains undocumented or falsely implied as complete.

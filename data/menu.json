@@ -1,0 +1,90 @@
+{
+  "id": "menu-demo",
+  "storeId": "store-demo",
+  "version": 1,
+  "categories": [
+    {
+      "id": "cat-breakfast",
+      "storeId": "store-demo",
+      "name": "Breakfast Favorites",
+      "order": 1,
+      "daypartRules": ["05:00-11:00"]
+    },
+    {
+      "id": "cat-lunch",
+      "storeId": "store-demo",
+      "name": "Lunch & Sandwiches",
+      "order": 2,
+      "daypartRules": ["11:00-16:00"]
+    },
+    {
+      "id": "cat-drinks",
+      "storeId": "store-demo",
+      "name": "Drinks",
+      "order": 3,
+      "daypartRules": []
+    }
+  ],
+  "items": [
+    {
+      "id": "item-ava-toast",
+      "storeId": "store-demo",
+      "categoryId": "cat-breakfast",
+      "name": "Avocado Toast",
+      "description": "Grilled sourdough topped with avocado smash, cherry tomatoes, and pickled onions.",
+      "price": 9.5,
+      "calories": 420,
+      "allergens": ["gluten"],
+      "visible": true,
+      "soldOutUntil": null
+    },
+    {
+      "id": "item-pancakes",
+      "storeId": "store-demo",
+      "categoryId": "cat-breakfast",
+      "name": "Lemon Ricotta Pancakes",
+      "description": "Fluffy pancakes served with blueberry compote.",
+      "price": 11,
+      "calories": 560,
+      "allergens": ["dairy", "gluten"],
+      "visible": true,
+      "soldOutUntil": null
+    },
+    {
+      "id": "item-club",
+      "storeId": "store-demo",
+      "categoryId": "cat-lunch",
+      "name": "Heritage Turkey Club",
+      "description": "Roasted turkey, bacon, greens, and herb aioli on toasted brioche.",
+      "price": 14,
+      "calories": 680,
+      "allergens": ["gluten", "egg"],
+      "visible": true,
+      "soldOutUntil": null
+    },
+    {
+      "id": "item-salad",
+      "storeId": "store-demo",
+      "categoryId": "cat-lunch",
+      "name": "Supergreen Salad",
+      "description": "Kale, quinoa, pickled fennel, pumpkin seeds, citrus vinaigrette.",
+      "price": 12,
+      "calories": 380,
+      "allergens": ["seeds"],
+      "visible": true,
+      "soldOutUntil": null
+    },
+    {
+      "id": "item-latte",
+      "storeId": "store-demo",
+      "categoryId": "cat-drinks",
+      "name": "Maple Oat Latte",
+      "description": "Double shot espresso with house maple syrup and oat milk.",
+      "price": 5.5,
+      "calories": 180,
+      "allergens": ["oat"],
+      "visible": true,
+      "soldOutUntil": null
+    }
+  ]
+}
