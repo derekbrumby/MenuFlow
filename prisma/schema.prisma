@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Menu {
+  id         String       @id
+  storeId    String
+  version    Int
+  categories Category[]
+  items      MenuItem[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model Category {
+  id          String   @id
+  storeId     String
+  name        String
+  order       Int
+  daypartRules String[]
+  menu        Menu?    @relation(fields: [menuId], references: [id])
+  menuId      String?
+  items       MenuItem[]
+}
+
+model MenuItem {
+  id           String   @id
+  storeId      String
+  categoryId   String
+  name         String
+  description  String
+  price        Float
+  calories     Int
+  allergens    String[]
+  visible      Boolean
+  soldOutUntil DateTime?
+  menu         Menu?    @relation(fields: [menuId], references: [id])
+  menuId       String?
+  category     Category @relation(fields: [categoryId], references: [id])
+}
