@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 const links = [
-  { href: "/(guest)", label: "Guest Menu" },
-  { href: "/(admin)", label: "Admin Dashboard" },
-  { href: "/(boards)", label: "Boards" }
+  { href: "/guest", label: "Guest Menu" },
+  { href: "/admin", label: "Admin Dashboard" },
+  { href: "/boards", label: "Boards" }
 ];
 
 export default function LandingPage() {

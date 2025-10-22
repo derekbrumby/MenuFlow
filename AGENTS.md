@@ -45,9 +45,9 @@ This document tells AI coding agents exactly how to plan, implement, test, and s
 ```
 
 /app
-/(guest)           # guest menu (paper view + filters + nutrition modal)
-/(admin)           # admin dashboard + command palette + diagnostics
-/(boards)          # TV/kiosk player (SSR-safe shell + SW registration)
+/guest           # guest menu (paper view + filters + nutrition modal)
+/admin           # admin dashboard + command palette + diagnostics
+/boards          # TV/kiosk player (SSR-safe shell + SW registration)
 /api               # Next.js route handlers (thin edges) or proxy to backend
 
 /backend
@@ -166,7 +166,7 @@ TOAST_TOKEN=...
 * **Goal:** Fast remove with auto-expiry.
 * **Artifacts**
 
-  * `app/(admin)/items/[id]/actions.tsx` — surface actions.
+  * `app/admin/items/[id]/actions.tsx` — surface actions.
   * `backend/modules/menu/availability.service.ts` — `soldOutUntil`.
   * `realtime` event: `item.availability.changed`.
 * **Tests**
@@ -179,7 +179,7 @@ TOAST_TOKEN=...
 * **Goal:** Natural-language edits with guardrails.
 * **Artifacts**
 
-  * `app/(admin)/command-palette/*`
+  * `app/admin/command-palette/*`
   * Parser: `packages/sdk/commands.ts` (`zod` parse → intent object).
 * **Tests**
 
@@ -191,7 +191,7 @@ TOAST_TOKEN=...
 * **Goal:** Board renders while WAN is down; reconcile later.
 * **Artifacts**
 
-  * SW: `app/(boards)/sw.ts` (cache manifest, fonts, images).
+  * SW: `app/boards/sw.ts` (cache manifest, fonts, images).
   * IndexedDB via Dexie: `lastManifest`, `assets`.
   * SSE client: `packages/sdk/realtime.ts`.
 * **Tests**
@@ -207,7 +207,7 @@ TOAST_TOKEN=...
 
   * `backend/adapters/{square,toast,lightspeed}.ts` (read-only MVP).
   * `backend/adapters/3p/{doordash,ubereats}.ts`.
-  * Sync dashboard: `app/(admin)/sync`.
+  * Sync dashboard: `app/admin/sync`.
 * **Tests**
 
   * Unit mock adapters; E2E “stale channel” health turns ✅ after push.
@@ -228,7 +228,7 @@ TOAST_TOKEN=...
 * **Goal:** Self-serve triage + structured logs.
 * **Artifacts**
 
-  * `app/(admin)/diagnostics` (network, device, adapter, SW, SSE).
+  * `app/admin/diagnostics` (network, device, adapter, SW, SSE).
   * “Generate Report” (zips logs, redacts secrets).
 * **Tests**
 
@@ -250,7 +250,7 @@ TOAST_TOKEN=...
 * **Goal:** WCAG 2.2 AA; FDA calorie lines for covered chains.
 * **Artifacts**
 
-  * `app/(guest)/*`—semantic landmarks; font scaling; high-contrast theme.
+  * `app/guest/*`—semantic landmarks; font scaling; high-contrast theme.
   * Nutrition modal + print sheet.
 * **Tests**
 
@@ -321,7 +321,7 @@ model Category {
 
 1. Install, `db:push`, `seed`.
 2. `typecheck`, `lint`, `test`.
-3. `a11y` (Playwright + axe) against `/ (guest)`, `/boards`, `/admin`.
+3. `a11y` (Playwright + axe) against `/ guest`, `/boards`, `/admin`.
 4. Bundle-size budget for board (ensure fast boot).
 
 **Artifacts**
