@@ -1,3 +1,4 @@
+import React from "react";
 import type { MenuItem } from "@/packages/types/src/menu";
 
 function formatCurrency(value: number) {

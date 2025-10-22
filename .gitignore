@@ -8,6 +8,7 @@ prisma/dev.db
 .env.local
 .env.*.local
 *.log
+tsconfig.tsbuildinfo
 .DS_Store
 .idea
 .vscode

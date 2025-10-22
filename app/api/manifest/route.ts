@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { sampleMenu } from "@/packages/types/src/sample-data";
+import { readMenu } from "@/lib/menu-store";
 
 export async function GET() {
-  return NextResponse.json({ menu: sampleMenu, publishedAt: new Date().toISOString() });
+  const menu = await readMenu();
+  return NextResponse.json({ menu, publishedAt: new Date().toISOString(), version: menu.version });
 }
